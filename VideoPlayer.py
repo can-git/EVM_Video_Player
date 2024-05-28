@@ -5,6 +5,7 @@ from PIL import Image, ImageTk
 import EVM
 from os.path import exists
 import click
+import rearrange_video as rv
 
 
 class VideoPlayer:
@@ -130,10 +131,11 @@ def run(video_path, low, high, amp):
     video_amp_path = f"results/{video_name}_{low}_{high}_{amp}.mp4"
 
     if exists(video_amp_path) is False:
-        print("AMP video is in the process, it will take a few minutes")
+        print("Checking If the video is suitable for the pyramid")
+        video_path = rv.make_video_divisible(video_path)
 
+        print("AMP video is in the process, it will take a few minutes")
         EVM.magnify_motion(amp_video_path=video_amp_path, video_path=video_path, low=low, high=high, amplification=amp)
-        print("Done")
 
     root = tk.Tk()
     player = VideoPlayer(root, video_path, video_amp_path)
