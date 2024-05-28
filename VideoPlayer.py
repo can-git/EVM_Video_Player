@@ -122,10 +122,10 @@ class VideoPlayer:
 
 
 @click.command()
-@click.option('--video_path', default='videos/video.mp4', help='Path to the input video file.')
+@click.option('--video_path', default='videos/baby.mp4', help='Path to the input video file.')
 @click.option('--low', default=0.4, type=float, help='Low frequency band for EVM.')
 @click.option('--high', default=3, type=int, help='High frequency band for EVM.')
-@click.option('--amp', default=10, type=int, help='Amplification factor for EVM.')
+@click.option('--amp', default=20, type=int, help='Amplification factor for EVM.')
 def run(video_path, low, high, amp):
     video_name = video_path.split('/')[-1].split('.')[0]
     video_amp_path = f"results/{video_name}_{low}_{high}_{amp}.mp4"
