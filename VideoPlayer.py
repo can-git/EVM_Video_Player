@@ -126,10 +126,11 @@ class VideoPlayer:
 @click.option('--high', default=3, type=int, help='High frequency band for EVM.')
 @click.option('--amp', default=10, type=int, help='Amplification factor for EVM.')
 def run(video_path, low, high, amp):
-    video_amp_path = f"results/out_{low}_{high}_{amp}.avi"
+    video_name = video_path.split('/')[-1].split('.')[0]
+    video_amp_path = f"results/{video_name}_{low}_{high}_{amp}.mp4"
     if exists(video_amp_path) is False:
-        print("AMP video is in the process, it will take around one minute")
-        EVM.magnify_motion(video_path, low, high, amplification=amp)
+        print("AMP video is in the process, it will take a few minutes")
+        EVM.magnify_motion(amp_video_path=video_amp_path, video_name=video_path, low=low, high=high, amplification=amp)
     print("Done")
 
     root = tk.Tk()

@@ -109,12 +109,14 @@ def reconstract_video(amp_video, origin_video, levels=3):
 
 
 # save video to files
-def save_video(video_tensor, low, high, amp):
-    fourcc = cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')
-    [height, width] = video_tensor[0].shape[0:2]
-    writer = cv2.VideoWriter(f"results/out_{low}_{high}_{amp}.avi", fourcc, 30, (width, height), 1)
-    for i in range(0, video_tensor.shape[0]):
+def save_video(amp_video_path, video_tensor):
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    height, width = video_tensor[0].shape[0:2]
+    writer = cv2.VideoWriter(amp_video_path, fourcc, 30, (width, height), 1)
+
+    for i in range(video_tensor.shape[0]):
         writer.write(cv2.convertScaleAbs(video_tensor[i]))
+
     writer.release()
 
 
@@ -163,7 +165,7 @@ def reconstract_from_tensorlist(filter_tensor_list, levels=3):
     return final
 
 
-def magnify_motion(video_name, low, high, levels=3, amplification=10):
+def magnify_motion(amp_video_path, video_name, low, high, levels=3, amplification=10):
     t, f = load_video(video_name)  # frame ve fps
     lap_video_list = laplacian_video(t, levels=levels)
     filter_tensor_list = []
@@ -173,5 +175,5 @@ def magnify_motion(video_name, low, high, levels=3, amplification=10):
         filter_tensor_list.append(filter_tensor)
     recon = reconstract_from_tensorlist(filter_tensor_list)
     final = t + recon
-    save_video(final, low, high, amplification)
+    save_video(amp_video_path, final)
 
