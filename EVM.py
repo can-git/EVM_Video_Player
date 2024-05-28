@@ -165,8 +165,8 @@ def reconstract_from_tensorlist(filter_tensor_list, levels=3):
     return final
 
 
-def magnify_motion(amp_video_path, video_name, low, high, levels=3, amplification=10):
-    t, f = load_video(video_name)  # frame ve fps
+def magnify_motion(amp_video_path, video_path, low, high, levels=3, amplification=10):
+    t, f = load_video(video_path)  # frame ve fps
     lap_video_list = laplacian_video(t, levels=levels)
     filter_tensor_list = []
     for i in range(levels):

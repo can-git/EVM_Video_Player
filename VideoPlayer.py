@@ -121,17 +121,19 @@ class VideoPlayer:
 
 
 @click.command()
-@click.option('--video_path', default='videos/baby.mp4', help='Path to the input video file.')
+@click.option('--video_path', default='videos/video.mp4', help='Path to the input video file.')
 @click.option('--low', default=0.4, type=float, help='Low frequency band for EVM.')
 @click.option('--high', default=3, type=int, help='High frequency band for EVM.')
 @click.option('--amp', default=10, type=int, help='Amplification factor for EVM.')
 def run(video_path, low, high, amp):
     video_name = video_path.split('/')[-1].split('.')[0]
     video_amp_path = f"results/{video_name}_{low}_{high}_{amp}.mp4"
+
     if exists(video_amp_path) is False:
         print("AMP video is in the process, it will take a few minutes")
-        EVM.magnify_motion(amp_video_path=video_amp_path, video_name=video_path, low=low, high=high, amplification=amp)
-    print("Done")
+
+        EVM.magnify_motion(amp_video_path=video_amp_path, video_path=video_path, low=low, high=high, amplification=amp)
+        print("Done")
 
     root = tk.Tk()
     player = VideoPlayer(root, video_path, video_amp_path)
