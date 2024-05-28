@@ -27,11 +27,6 @@ def make_video_divisible(video_path):
         new_w = make_divisible_by_2_three_times(clip.w)
         clip = clip.margin(left=new_w - clip.w)
 
-    if new_w == 0 and new_h == 0:
-        print("Video is okey")
-        return video_path
-    else:
-        output_video_path = f"videos/{video_path.split('/')[-1].split('.')[0]}_rearranged.mp4"
-        clip.write_videofile(output_video_path, codec='libx264')
+    if new_w != 0 or new_h != 0:
+        clip.write_videofile(video_path, codec='libx264')
         print("Video is rearranged")
-        return output_video_path

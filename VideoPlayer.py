@@ -132,7 +132,7 @@ def run(video_path, low, high, amp):
 
     if exists(video_amp_path) is False:
         print("Checking If the video is suitable for the pyramid")
-        video_path = rv.make_video_divisible(video_path)
+        rv.make_video_divisible(video_path)
 
         print("AMP video is in the process, it will take a few minutes")
         EVM.magnify_motion(amp_video_path=video_amp_path, video_path=video_path, low=low, high=high, amplification=amp)

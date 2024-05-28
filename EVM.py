@@ -110,9 +110,6 @@ def reconstract_video(amp_video, origin_video, levels=3):
 
 # save video to files
 def save_video(amp_video_path, video_tensor):
-    if "rearranged" in amp_video_path:
-        amp_video_path = amp_video_path.split('_')[0]
-
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     height, width = video_tensor[0].shape[0:2]
     writer = cv2.VideoWriter(amp_video_path, fourcc, 30, (width, height), 1)
