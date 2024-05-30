@@ -1,4 +1,5 @@
 from moviepy.editor import *
+import click
 
 
 def is_divisible_by_2_three_times(value):
@@ -28,5 +29,15 @@ def make_video_divisible(video_path):
         clip = clip.margin(left=new_w - clip.w)
 
     if new_w != 0 or new_h != 0:
-        clip.write_videofile(video_path, codec='libx264')
+        clip.write_videofile("videos/video3.mp4")
         print("Video is rearranged")
+
+
+@click.command()
+@click.option('--video_path', default='videos/video2.mp4', help='Path to the input video file.')
+def run(video_path):
+    make_video_divisible(video_path)
+
+
+if __name__ == "__main__":
+    run()

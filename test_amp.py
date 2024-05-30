@@ -2,45 +2,42 @@ import cv2
 import numpy as np
 import EVM
 
-video_path = "videos/baby.mp4"
-low = 0.4
-high = 3
+video_path = "results/video3_0.4_3_15.mp4"
+low = 0.8
+high = 2
 amp = 10
 video_name = video_path.split('/')[-1].split('.')[0]
 video_amp_path = f"results/{video_name}_{low}_{high}_{amp}.mp4"
 
-# t, f = EVM.load_video(video_path)  # frame ve fps
-# lap_video_list = EVM.laplacian_video(t, levels=3)
-# filter_tensor_list = []
-# for i in range(3):
-#     filter_tensor = EVM.butter_bandpass_filter(lap_video_list[i], low, high, f)
-#     filter_tensor *= amp
-#     filter_tensor_list.append(filter_tensor)
-# recon = EVM.reconstract_from_tensorlist(filter_tensor_list)
-# EVM.save_video("deneme.mp4", recon)
+
+def draw_flow_arrows(image, flow, step=16, scale=1, min_length=8):
+    h, w = image.shape[:2]
+    y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
+    fx, fy = flow[y, x].T
+    lines = np.vstack([x, y, x + fx * scale, y + fy * scale]).T.reshape(-1, 2, 2)
+    lines = np.int32(lines + 0.5)
+    for (x1, y1), (x2, y2) in lines:
+        length = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+        if length >= min_length:
+            cv2.arrowedLine(image, (x1, y1), (x2, y2), (0, 255, 0), 1, tipLength=0.4)
 
 
 # Load the video
-cap = cv2.VideoCapture("deneme.mp4")
-# cap = cv2.VideoCapture(video_amp_path)
+cap = cv2.VideoCapture(video_path)
+# cap = cv2.VideoCapture("results/amp_combined_edges_output.mp4")
 
 # Take the first frame of the video
 ret, first_frame = cap.read()
-
-# Select a point to track
-bbox = cv2.selectROI("Select point to track", first_frame, fromCenter=False, showCrosshair=True)
-point = (int(bbox[0] + bbox[2] / 2), int(bbox[1] + bbox[3] / 2))
-cv2.destroyWindow("Select point to track")
+old_gray = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
 
 # Set up the initial tracking point
-old_points = np.array([[point]], dtype=np.float32)
+height, width = first_frame.shape[:2]
 
 # Create a mask image for drawing purposes
 mask = np.zeros_like(first_frame)
 
-# Parameters for Lucas-Kanade optical flow
-lk_params = dict(winSize=(15, 15), maxLevel=2,
-                 criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 10, 0.03))
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter("results/amp_combined_edges_output_flow.mp4", fourcc, 30, (width, height))
 
 while True:
     # Read a new frame
@@ -50,35 +47,22 @@ while True:
 
     # Convert the frame to grayscale
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    gray_first_frame = cv2.cvtColor(first_frame, cv2.COLOR_BGR2GRAY)
 
-    # Calculate optical flow
-    new_points, status, error = cv2.calcOpticalFlowPyrLK(gray_first_frame, gray_frame, old_points, None, **lk_params)
-    print(new_points)
-    # Select good points
-    good_new = new_points[status == 1]
-    good_old = old_points[status == 1]
+    flow = cv2.calcOpticalFlowFarneback(old_gray, gray_frame, None, 0.5, 2, 15, 3, 5, 1.2, 0)
 
-    # Draw the tracks
-    for i, (new, old) in enumerate(zip(good_new, good_old)):
-        a, b = new.ravel()
-        c, d = old.ravel()
-        a = int(round(a))
-        b = int(round(b))
-        c = int(round(c))
-        d = int(round(d))
-        mask = cv2.line(mask, (a, b), (c, d), (0, 255, 0), 2)
-        frame = cv2.circle(frame, (a, b), 5, (0, 0, 255), -1)
+    # Draw arrows for optical flow vectors
+    draw_flow_arrows(frame, flow)
 
     # Overlay the optical flow tracks on the original frame
     output = cv2.add(frame, mask)
+
+    out.write(output)
 
     # Show the frame
     cv2.imshow('Tracking', output)
 
     # Update the previous frame and previous points
     first_frame = frame.copy()
-    # old_points = good_new.reshape(-1, 1, 2)
 
     # Exit if ESC pressed
     if cv2.waitKey(30) & 0xFF == 27:
@@ -86,6 +70,3 @@ while True:
 
 cap.release()
 cv2.destroyAllWindows()
-
-
-# EVM.magnify_motion(video_amp_path, "videos/baby.mp4", 0.4, 3, amplification=10)

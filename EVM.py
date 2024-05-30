@@ -6,25 +6,25 @@ from tqdm import tqdm
 
 
 # convert RBG to YIQ
-def rgb2ntsc(src):
-    [rows, cols] = src.shape[:2]
-    dst = np.zeros((rows, cols, 3), dtype=np.float64)
-    T = np.array([[0.114, 0.587, 0.298], [-0.321, -0.275, 0.596], [0.311, -0.528, 0.212]])
-    for i in range(rows):
-        for j in range(cols):
-            dst[i, j] = np.dot(T, src[i, j])
-    return dst
-
-
-# convert YIQ to RBG
-def ntsc2rbg(src):
-    [rows, cols] = src.shape[:2]
-    dst = np.zeros((rows, cols, 3), dtype=np.float64)
-    T = np.array([[1, -1.108, 1.705], [1, -0.272, -0.647], [1, 0.956, 0.620]])
-    for i in range(rows):
-        for j in range(cols):
-            dst[i, j] = np.dot(T, src[i, j])
-    return dst
+# def rgb2ntsc(src):
+#     [rows, cols] = src.shape[:2]
+#     dst = np.zeros((rows, cols, 3), dtype=np.float64)
+#     T = np.array([[0.114, 0.587, 0.298], [-0.321, -0.275, 0.596], [0.311, -0.528, 0.212]])
+#     for i in range(rows):
+#         for j in range(cols):
+#             dst[i, j] = np.dot(T, src[i, j])
+#     return dst
+#
+#
+# # convert YIQ to RBG
+# def ntsc2rbg(src):
+#     [rows, cols] = src.shape[:2]
+#     dst = np.zeros((rows, cols, 3), dtype=np.float64)
+#     T = np.array([[1, -1.108, 1.705], [1, -0.272, -0.647], [1, 0.956, 0.620]])
+#     for i in range(rows):
+#         for j in range(cols):
+#             dst[i, j] = np.dot(T, src[i, j])
+#     return dst
 
 
 # Build Gaussian Pyramid
@@ -92,8 +92,8 @@ def gaussian_video(video_tensor, levels=3):
 
 
 # amplify the video
-def amplify_video(gaussian_vid, amplification=50):
-    return gaussian_vid * amplification
+# def amplify_video(gaussian_vid, amplification=50):
+#     return gaussian_vid * amplification
 
 
 # reconstract video from original video and gaussian video
@@ -115,19 +115,20 @@ def save_video(amp_video_path, video_tensor):
     writer = cv2.VideoWriter(amp_video_path, fourcc, 30, (width, height), 1)
 
     for i in range(video_tensor.shape[0]):
-        writer.write(cv2.convertScaleAbs(video_tensor[i]))
+        a = cv2.convertScaleAbs(video_tensor[i])
+        writer.write(a)
 
     writer.release()
 
 
 # magnify color
-def magnify_color(video_name, low, high, levels=3, amplification=20):
-    t, f = load_video(video_name)
-    gau_video = gaussian_video(t, levels=levels)
-    filtered_tensor = temporal_ideal_filter(gau_video, low, high, f)
-    amplified_video = amplify_video(filtered_tensor, amplification=amplification)
-    final = reconstract_video(amplified_video, t, levels=3)
-    save_video(final)
+# def magnify_color(video_name, low, high, levels=3, amplification=20):
+#     t, f = load_video(video_name)
+#     gau_video = gaussian_video(t, levels=levels)
+#     filtered_tensor = temporal_ideal_filter(gau_video, low, high, f)
+#     amplified_video = amplify_video(filtered_tensor, amplification=amplification)
+#     final = reconstract_video(amplified_video, t, levels=3)
+#     save_video(final)
 
 
 # build laplacian pyramid for video
